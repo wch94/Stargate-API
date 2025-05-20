@@ -1,0 +1,15 @@
+﻿global using MediatR;
+global using MediatR.Pipeline;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using Stargate.API.Extensions;
+global using Stargate.API.Middleware;
+global using Stargate.Application.Common.Exceptions;
+global using Stargate.Application.Common.Responses;
+global using Stargate.Application.Commands.CreatePerson;
+global using Stargate.Application.Interfaces;
+//global using Stargate.Application.Queries;
+global using Stargate.Infrastructure.Data;
+global using Stargate.Infrastructure.Repositories;
+global using System.Net;
+global using System.Text.Json;
