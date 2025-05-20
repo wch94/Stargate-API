@@ -6,7 +6,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<StargateContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("StarbaseApiDatabase")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("StargateDB")));
 
 // Register MediatR and pipeline behaviors
 builder.Services.AddMediatR(cfg =>
@@ -20,6 +20,9 @@ builder.Services.AddMediatR(cfg =>
 // Register MediatR PreProcessor support
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
 builder.Services.AddTransient<IRequestPreProcessor<CreatePersonCommand>, CreatePersonPreProcessor>();
+
+// Register AutoMapper
+builder.Services.AddAutoMapper(typeof(PersonProfile).Assembly);
 
 // Register repository
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();

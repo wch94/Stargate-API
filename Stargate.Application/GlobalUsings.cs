@@ -1,4 +1,5 @@
-﻿global using FluentValidation;
+﻿global using AutoMapper;
+global using FluentValidation;
 global using MediatR;
 global using MediatR.Pipeline;
 global using Stargate.Application.Common.Exceptions;

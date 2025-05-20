@@ -28,15 +28,23 @@ public class ExceptionHandlingMiddleware
     {
         context.Response.ContentType = "application/json";
 
-        context.Response.StatusCode = exception switch
-        {
-            ConflictException => (int)HttpStatusCode.Conflict,
-            _ => (int)HttpStatusCode.InternalServerError
-        };
+        int statusCode = (int)HttpStatusCode.InternalServerError;
+        string message = "An unexpected error occurred.";
 
-        var result = JsonSerializer.Serialize(new
+        if (exception is BaseResponseException baseEx)
         {
-            error = exception.Message
+            statusCode = baseEx.ResponseCode;
+            message = baseEx.Message;
+        }
+
+        context.Response.StatusCode = statusCode;
+
+        var result = JsonSerializer.Serialize(new BaseResponse<object>
+        {
+            Success = false,
+            Message = message,
+            ResponseCode = statusCode,
+            Data = null
         });
 
         await context.Response.WriteAsync(result);

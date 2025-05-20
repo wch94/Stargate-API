@@ -1,4 +1,6 @@
-﻿namespace Stargate.API.Controllers;
+﻿using Stargate.Application.Commands.UpdatePersonByName;
+
+namespace Stargate.API.Controllers;
 
 [ApiController]
 [Route("v1/api/[controller]")]
@@ -10,56 +12,32 @@ public class PersonController : ControllerBase
         _mediator = mediator;
     }
 
-    //[HttpGet]
-    //public async Task<IActionResult> GetPeople()
-    //{
-    //    try
-    //    {
-    //        var result = await _mediator.Send(new GetPeople()
-    //        {
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var response = await _mediator.Send(new GetAllPeopleQuery());
+        return StatusCode(response.ResponseCode, response);
+    }
 
-    //        });
+    [HttpGet("by-name")]
+    public async Task<IActionResult> GetByName([FromQuery] string name)
+    {
+        var response = await _mediator.Send(new GetPersonByNameQuery(name));
+        return StatusCode(response.ResponseCode, response);
+    }
 
-    //        return this.GetResponse(result);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return this.GetResponse(new BaseResponse()
-    //        {
-    //            Message = ex.Message,
-    //            Success = false,
-    //            ResponseCode = (int)HttpStatusCode.InternalServerError
-    //        });
-    //    }
-    //}
-
-    //[HttpGet("{name}")]
-    //public async Task<IActionResult> GetPersonByName(string name)
-    //{
-    //    try
-    //    {
-    //        var result = await _mediator.Send(new GetPersonByName()
-    //        {
-    //            Name = name
-    //        });
-
-    //        return this.GetResponse(result);
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return this.GetResponse(new BaseResponse()
-    //        {
-    //            Message = ex.Message,
-    //            Success = false,
-    //            ResponseCode = (int)HttpStatusCode.InternalServerError
-    //        });
-    //    }
-    //}
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreatePersonCommand command)
     {
         var result = await _mediator.Send(command);
-        return CreatedAtAction(nameof(Create), result);
+        return CreatedAtAction(nameof(GetByName), new { name = result.Data?.Name }, result);
+    }
+
+    [HttpPut("by-name")]
+    public async Task<IActionResult> UpdateByName([FromBody] UpdatePersonByNameCommand command)
+    {
+        var response = await _mediator.Send(command);
+        return StatusCode(response.ResponseCode, response);
     }
 }
