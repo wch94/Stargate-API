@@ -1,4 +1,5 @@
 ﻿using Stargate.Application.Queries.GetAstronautDuties;
+using Stargate.Application.Responses;
 
 namespace Stargate.API.Controllers;
 
@@ -14,6 +15,7 @@ public class PersonController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(GetPeopleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         [FromQuery] string? name,
         [FromQuery] string? sortBy = "name",

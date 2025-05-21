@@ -23,6 +23,12 @@ builder.Services.AddOpenApiDocument(config =>
     config.Version = "v1";
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
+
 // SQL connection string using sa
 var saPassword = Environment.GetEnvironmentVariable("SA_PASSWORD");
 var connectionString = $"Server=192.168.50.223;Database=StargateDB;User Id=sa;Password={saPassword};Encrypt=False;";
@@ -78,6 +84,7 @@ if (app.Environment.IsDevelopment())
 app.UseCustomExceptionHandler();
 
 //app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
