@@ -1,6 +1,9 @@
-﻿global using MediatR;
+﻿global using Azure.Identity;
+global using MediatR;
 global using MediatR.Pipeline;
+global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.Data.SqlClient;
 global using Microsoft.EntityFrameworkCore;
 global using Stargate.API.Extensions;
 global using Stargate.API.Middleware;

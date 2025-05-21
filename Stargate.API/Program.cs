@@ -1,4 +1,7 @@
+using Azure.Identity;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Data.SqlClient;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +16,28 @@ builder.Services.AddOpenApiDocument(config =>
     config.Version = "v1";
 });
 
+bool.TryParse(builder.Configuration["LOCAL_DEVELOPMENT"], out bool isLocalDev);
+var sqlServer = builder.Configuration["Database:Server"];
+var database = builder.Configuration["Database:Name"];
+
+// DbContext
 builder.Services.AddDbContext<StargateContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("StargateDB")));
+{
+    SqlConnection connection;
+    if (isLocalDev)
+    {
+        var connectionString = $"Data Source={sqlServer};Initial Catalog={database};User ID=wch94_aol.com#EXT#@wch94aol.onmicrosoft.com;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Authentication=ActiveDirectoryInteractive;Application Intent=ReadWrite;Multi Subnet Failover=False";
+        connection = new SqlConnection(connectionString);
+    }
+    else
+    {
+        var connectionString = $"Server={sqlServer};Database={database};";
+        var credential = new DefaultAzureCredential();
+        var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://database.windows.net/" }));
+        connection = new SqlConnection(connectionString) { AccessToken = token.Token };
+    }
+    options.UseSqlServer(connection);
+});
 
 // Register MediatR and pipeline behaviors
 builder.Services.AddMediatR(cfg =>

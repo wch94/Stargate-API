@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Stargate.Infrastructure\Stargate.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
 </Project>
