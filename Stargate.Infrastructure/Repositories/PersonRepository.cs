@@ -16,27 +16,12 @@ public class PersonRepository : IPersonRepository
             .AsNoTracking();
     }
 
-    public async Task<List<Person>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        return await _context.People
-            .Include(p => p.AstronautDetail)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<Person?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         return await _context.People
             .Include(p => p.AstronautDetail)
+            .Include(p => p.AstronautDuties)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
-    }
-
-    public async Task<Person?> GetByNameContainsAsync(string partialName, CancellationToken cancellationToken)
-    {
-        return await _context.People
-            .Include(p => p.AstronautDetail)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => EF.Functions.Like(p.Name, $"%{partialName}%"), cancellationToken);
     }
 
     public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken)

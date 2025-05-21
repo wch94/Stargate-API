@@ -18,16 +18,19 @@ public class GetAstronautDutiesHandler
     {
         var duties = await _repo.GetByPersonIdAsync(request.PersonId, cancellationToken);
 
-        if (!duties.Any())
-            throw new NotFoundException($"No astronaut duties found for person with ID {request.PersonId}");
+        var sortedDuties = duties
+            .OrderByDescending(d => d.DutyStartDate)
+            .ToList();
 
-        var dtoList = _mapper.Map<List<AstronautDutyDto>>(duties);
+        var dtoList = _mapper.Map<List<AstronautDutyDto>>(sortedDuties);
 
         return new GetAstronautDutiesResponse
         {
             Data = dtoList,
             Success = true,
-            Message = "Astronaut duties retrieved successfully",
+            Message = duties.Any()
+                ? "Astronaut duties retrieved successfully"
+                : "No astronaut duties found",
             ResponseCode = (int)HttpStatusCode.OK
         };
     }

@@ -1,6 +1,4 @@
-﻿using Stargate.Application.Responses;
-
-namespace Stargate.API.Middleware;
+﻿namespace Stargate.API.Middleware;
 
 public class ExceptionHandlingMiddleware
 {
@@ -34,16 +32,48 @@ public class ExceptionHandlingMiddleware
         {
             ConflictException => (int)HttpStatusCode.Conflict,
             NotFoundException => (int)HttpStatusCode.NotFound,
+            ValidationException => (int)HttpStatusCode.BadRequest,
+            CustomValidationException => (int)HttpStatusCode.BadRequest,
             BaseResponseException bre => bre.ResponseCode,
             _ => (int)HttpStatusCode.InternalServerError
         };
 
-        var response = new BaseResponse
+        object response;
+
+        if (exception is ValidationException fvEx)
         {
-            Success = false,
-            Message = exception.Message,
-            ResponseCode = statusCode
-        };
+            response = new
+            {
+                Success = false,
+                Message = "Validation failed",
+                ResponseCode = statusCode,
+                Errors = fvEx.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Select(e => e.ErrorMessage).ToArray()
+                    )
+            };
+        }
+        else if (exception is CustomValidationException cve)
+        {
+            response = new
+            {
+                Success = false,
+                Message = exception.Message,
+                ResponseCode = (int)HttpStatusCode.BadRequest,
+                Errors = cve.Errors
+            };
+        }
+        else
+        {
+            response = new BaseResponse
+            {
+                Success = false,
+                Message = exception.Message,
+                ResponseCode = statusCode
+            };
+        }
 
         context.Response.StatusCode = statusCode;
 

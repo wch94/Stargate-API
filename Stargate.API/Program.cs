@@ -2,6 +2,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -57,6 +61,13 @@ builder.Services.AddAutoMapper(typeof(AstronautDutyProfile).Assembly);
 // Register repositories
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IAstronautDutyRepository, AstronautDutyRepository>();
+
+// Register FluentValidations
+builder.Services.AddValidatorsFromAssembly(typeof(CreatePersonValidator).Assembly);
+builder.Services.AddFluentValidationAutoValidation();
+
+// Register ValidationBehavior for FluentValidation
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 var app = builder.Build();
 

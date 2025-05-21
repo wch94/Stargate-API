@@ -22,6 +22,29 @@ public class CreateAstronautDutyHandler : IRequestHandler<CreateAstronautDutyCom
         if (person is null)
             throw new NotFoundException($"Person with ID {request.PersonId} not found.");
 
+        // Load astronaut detail if not already included
+        var astronautDetail = person.AstronautDetail;
+        if (astronautDetail == null)
+            throw new CustomValidationException("AstronautDetail", $"Person with ID {request.PersonId} does not have an astronaut detail record.");
+
+        // Check for current active duty
+        var currentDuty = person.AstronautDuties
+            .FirstOrDefault(d => d.DutyEndDate == null);
+
+        if (currentDuty != null)
+        {
+            if (request.DutyStartDate <= currentDuty.DutyStartDate)
+                throw new CustomValidationException("AstronautDuty", "New duty start date must be after the current duty's start date.");
+
+            currentDuty.DutyEndDate = request.DutyStartDate.AddDays(-1);
+        }
+
+        // Retirement logic → update AstronautDetail.CareerEndDate
+        if (request.DutyTitle?.Trim().ToUpperInvariant() == "RETIRED")
+        {
+            astronautDetail.CareerEndDate = request.DutyStartDate.AddDays(-1);
+        }
+
         var duty = new Domain.Entities.AstronautDuty
         {
             PersonId = request.PersonId,
