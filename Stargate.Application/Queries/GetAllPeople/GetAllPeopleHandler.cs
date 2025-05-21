@@ -1,6 +1,6 @@
 ﻿namespace Stargate.Application.Queries.GetAllPeople;
 
-public class GetAllPeopleHandler : IRequestHandler<GetAllPeopleQuery, BaseResponse<List<PersonDto>>>
+public class GetAllPeopleHandler : IRequestHandler<GetAllPeopleQuery, GetAllPeopleResponse>
 {
     private readonly IPersonRepository _personRepository;
     private readonly IMapper _mapper;
@@ -11,16 +11,17 @@ public class GetAllPeopleHandler : IRequestHandler<GetAllPeopleQuery, BaseRespon
         _mapper = mapper;
     }
 
-    public async Task<BaseResponse<List<PersonDto>>> Handle(GetAllPeopleQuery request, CancellationToken cancellationToken)
+    public async Task<GetAllPeopleResponse> Handle(GetAllPeopleQuery request, CancellationToken cancellationToken)
     {
         var people = await _personRepository.GetAllAsync(cancellationToken);
+        var dtoList = _mapper.Map<List<PersonAstronautDto>>(people);
 
-        var dtoList = _mapper.Map<List<PersonDto>>(people);
-
-        return new BaseResponse<List<PersonDto>>(dtoList)
+        return new GetAllPeopleResponse
         {
+            Data = dtoList,
             Message = "People retrieved successfully",
-            ResponseCode = (int)HttpStatusCode.OK
+            ResponseCode = (int)HttpStatusCode.OK,
+            Success = true
         };
     }
 }

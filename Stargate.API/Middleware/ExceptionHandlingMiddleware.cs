@@ -1,4 +1,6 @@
-﻿namespace Stargate.API.Middleware;
+﻿using Stargate.Application.Responses;
+
+namespace Stargate.API.Middleware;
 
 public class ExceptionHandlingMiddleware
 {
@@ -28,25 +30,23 @@ public class ExceptionHandlingMiddleware
     {
         context.Response.ContentType = "application/json";
 
-        int statusCode = (int)HttpStatusCode.InternalServerError;
-        string message = "An unexpected error occurred.";
-
-        if (exception is BaseResponseException baseEx)
+        int statusCode = exception switch
         {
-            statusCode = baseEx.ResponseCode;
-            message = baseEx.Message;
-        }
+            ConflictException => (int)HttpStatusCode.Conflict,
+            NotFoundException => (int)HttpStatusCode.NotFound,
+            BaseResponseException bre => bre.ResponseCode,
+            _ => (int)HttpStatusCode.InternalServerError
+        };
+
+        var response = new BaseResponse
+        {
+            Success = false,
+            Message = exception.Message,
+            ResponseCode = statusCode
+        };
 
         context.Response.StatusCode = statusCode;
 
-        var result = JsonSerializer.Serialize(new BaseResponse<object>
-        {
-            Success = false,
-            Message = message,
-            ResponseCode = statusCode,
-            Data = null
-        });
-
-        await context.Response.WriteAsync(result);
+        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
     }
 }

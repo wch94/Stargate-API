@@ -1,3 +1,3 @@
 ﻿namespace Stargate.Application.Queries.GetAllPeople;
 
-public record GetAllPeopleQuery : IRequest<BaseResponse<List<PersonDto>>>;
+public record GetAllPeopleQuery : IRequest<GetAllPeopleResponse>;
