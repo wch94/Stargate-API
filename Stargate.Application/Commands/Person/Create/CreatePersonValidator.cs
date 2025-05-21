@@ -1,4 +1,4 @@
-﻿namespace Stargate.Application.Commands.CreatePerson;
+﻿namespace Stargate.Application.Commands.Person.Create;
 
 public class CreatePersonValidator : AbstractValidator<CreatePersonCommand>
 {

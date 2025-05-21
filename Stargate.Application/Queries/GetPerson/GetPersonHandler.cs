@@ -1,17 +1,17 @@
-﻿namespace Stargate.Application.Queries.GetPersonById;
+﻿namespace Stargate.Application.Queries.GetPerson;
 
-public class GetPersonByIdHandler : IRequestHandler<GetPersonByIdQuery, GetPersonByIdResponse>
+public class GetPersonHandler : IRequestHandler<GetPersonQuery, GetPersonResponse>
 {
     private readonly IPersonRepository _personRepository;
     private readonly IMapper _mapper;
 
-    public GetPersonByIdHandler(IPersonRepository personRepository, IMapper mapper)
+    public GetPersonHandler(IPersonRepository personRepository, IMapper mapper)
     {
         _personRepository = personRepository;
         _mapper = mapper;
     }
 
-    public async Task<GetPersonByIdResponse> Handle(GetPersonByIdQuery request, CancellationToken cancellationToken)
+    public async Task<GetPersonResponse> Handle(GetPersonQuery request, CancellationToken cancellationToken)
     {
         var person = await _personRepository.GetByIdAsync(request.Id, cancellationToken);
         if (person is null)
@@ -19,7 +19,7 @@ public class GetPersonByIdHandler : IRequestHandler<GetPersonByIdQuery, GetPerso
 
         var dto = _mapper.Map<PersonAstronautDto>(person);
 
-        return new GetPersonByIdResponse
+        return new GetPersonResponse
         {
             Data = dto,
             Message = "Person retrieved successfully",

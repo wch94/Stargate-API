@@ -1,9 +1,9 @@
-﻿namespace Stargate.Application.Commands.UpdatePerson;
+﻿namespace Stargate.Application.Commands.Person.Create;
 
-public record UpdatePersonCommand(
+public record CreatePersonCommand(
     string Name,
     string? CurrentRank,
     string? CurrentDutyTitle,
     DateTime? CareerStartDate,
     DateTime? CareerEndDate
-) : IRequest<UpdatePersonResponse>;
+) : IRequest<CreatePersonResponse>;

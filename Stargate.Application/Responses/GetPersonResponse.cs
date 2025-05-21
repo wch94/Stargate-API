@@ -1,6 +1,6 @@
 ﻿namespace Stargate.Application.Responses;
 
-public class GetPersonByIdResponse : BaseResponse
+public class GetPersonResponse : BaseResponse
 {
     public PersonAstronautDto? Data { get; set; }
 }

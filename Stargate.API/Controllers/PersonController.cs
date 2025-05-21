@@ -12,23 +12,21 @@ public class PersonController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> Get(
+        [FromQuery] string? name,
+        [FromQuery] string? sortBy = "name",
+        [FromQuery] bool desc = false,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var response = await _mediator.Send(new GetAllPeopleQuery());
+        var response = await _mediator.Send(new GetPeopleQuery(name, sortBy, desc, page, pageSize));
         return StatusCode(response.ResponseCode, response);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        var response = await _mediator.Send(new GetPersonByIdQuery(id));
-        return StatusCode(response.ResponseCode, response);
-    }
-
-    [HttpGet("by-name")]
-    public async Task<IActionResult> GetByName([FromQuery] string name)
-    {
-        var response = await _mediator.Send(new GetPersonByNameQuery(name));
+        var response = await _mediator.Send(new GetPersonQuery(id));
         return StatusCode(response.ResponseCode, response);
     }
 
@@ -43,6 +41,13 @@ public class PersonController : ControllerBase
     public async Task<IActionResult> Update(int id, [FromBody] UpdatePersonCommand command)
     {
         var response = await _mediator.Send(new UpdatePersonEnvelope(id, command));
+        return StatusCode(response.ResponseCode, response);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var response = await _mediator.Send(new DeletePersonCommand(id));
         return StatusCode(response.ResponseCode, response);
     }
 }

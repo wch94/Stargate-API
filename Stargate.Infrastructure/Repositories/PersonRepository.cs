@@ -9,6 +9,21 @@ public class PersonRepository : IPersonRepository
         _context = context;
     }
 
+    public IQueryable<Person> AsQueryable()
+    {
+        return _context.People
+            .Include(p => p.AstronautDetail)
+            .AsNoTracking();
+    }
+
+    public async Task<List<Person>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _context.People
+            .Include(p => p.AstronautDetail)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<Person?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         return await _context.People
@@ -22,14 +37,6 @@ public class PersonRepository : IPersonRepository
             .Include(p => p.AstronautDetail)
             .AsNoTracking()
             .FirstOrDefaultAsync(p => EF.Functions.Like(p.Name, $"%{partialName}%"), cancellationToken);
-    }
-
-    public async Task<List<Person>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        return await _context.People
-            .Include(p => p.AstronautDetail)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
     }
 
     public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken)
@@ -48,6 +55,12 @@ public class PersonRepository : IPersonRepository
     public async Task UpdateAsync(Person person, CancellationToken cancellationToken)
     {
         _context.People.Update(person);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(Person person, CancellationToken cancellationToken)
+    {
+        _context.People.Remove(person);
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

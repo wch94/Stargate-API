@@ -1,4 +1,4 @@
-﻿namespace Stargate.Application.Commands.CreatePerson;
+﻿namespace Stargate.Application.Commands.Person.Create;
 
 public class CreatePersonHandler : IRequestHandler<CreatePersonCommand, CreatePersonResponse>
 {
@@ -13,7 +13,7 @@ public class CreatePersonHandler : IRequestHandler<CreatePersonCommand, CreatePe
 
     public async Task<CreatePersonResponse> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
     {
-        var person = new Person
+        var person = new Domain.Entities.Person
         {
             Name = request.Name
         };

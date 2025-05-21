@@ -1,4 +1,4 @@
-﻿namespace Stargate.Application.Commands.UpdatePerson;
+﻿namespace Stargate.Application.Commands.Person.Update;
 
 public class UpdatePersonByIdHandler : IRequestHandler<UpdatePersonEnvelope, UpdatePersonResponse>
 {

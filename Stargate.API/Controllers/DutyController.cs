@@ -1,11 +1,11 @@
 ﻿//namespace Stargate.API.Controllers;
 
 //[ApiController]
-//[Route("v1/api/[controller]")]
-//public class AstronautDutyController : ControllerBase
+//[Route("api/v1/[controller]")]
+//public class DutyController : ControllerBase
 //{
 //    private readonly IMediator _mediator;
-//    public AstronautDutyController(IMediator mediator)
+//    public DutyController(IMediator mediator)
 //    {
 //        _mediator = mediator;
 //    }
@@ -30,13 +30,13 @@
 //                Success = false,
 //                ResponseCode = (int)HttpStatusCode.InternalServerError
 //            });
-//        }            
+//        }
 //    }
 
 //    [HttpPost("")]
 //    public async Task<IActionResult> CreateAstronautDuty([FromBody] CreateAstronautDuty request)
 //    {
-//            var result = await _mediator.Send(request);
-//            return this.GetResponse(result);           
+//        var result = await _mediator.Send(request);
+//        return this.GetResponse(result);
 //    }
 //}

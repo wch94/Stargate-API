@@ -1,7 +1,4 @@
-﻿//using Microsoft.EntityFrameworkCore.Metadata.Builders;
-//using Microsoft.EntityFrameworkCore;
-
-namespace Stargate.Domain.Entities;
+﻿namespace Stargate.Domain.Entities;
 
 [Table("Person")]
 public class Person
@@ -12,7 +9,7 @@ public class Person
 
     public virtual AstronautDetail? AstronautDetail { get; set; }
 
-    //public virtual ICollection<AstronautDuty> AstronautDuties { get; set; } = new HashSet<AstronautDuty>();
+    public virtual ICollection<AstronautDuty> AstronautDuties { get; set; } = new HashSet<AstronautDuty>();
 
 }
 
@@ -25,6 +22,8 @@ public class PersonConfiguration : IEntityTypeConfiguration<Person>
         builder.HasOne(z => z.AstronautDetail)
             .WithOne(z => z.Person)
             .HasForeignKey<AstronautDetail>(z => z.PersonId);
-        //builder.HasMany(z => z.AstronautDuties).WithOne(z => z.Person).HasForeignKey(z => z.PersonId);
+        builder.HasMany(z => z.AstronautDuties)
+            .WithOne(z => z.Person)
+            .HasForeignKey(z => z.PersonId);
     }
 }
