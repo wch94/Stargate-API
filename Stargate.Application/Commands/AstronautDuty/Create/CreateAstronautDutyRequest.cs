@@ -1,10 +1,7 @@
-﻿namespace Stargate.Application.DTOs;
+﻿namespace Stargate.Application.Commands.AstronautDuty.Create;
 
-public class AstronautDutyDto
+public class CreateAstronautDutyRequest
 {
-    public int Id { get; set; }
-    public int PersonId { get; set; }
-    public string PersonName { get; set; } = string.Empty;
     public string Rank { get; set; } = string.Empty;
     public string DutyTitle { get; set; } = string.Empty;
     public DateTime DutyStartDate { get; set; }

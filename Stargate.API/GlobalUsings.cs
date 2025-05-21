@@ -10,6 +10,7 @@ global using Stargate.Application.Commands.Person.Create;
 global using Stargate.Application.Commands.Person.Delete;
 global using Stargate.Application.Commands.Person.Update;
 global using Stargate.Application.Interfaces;
+global using Stargate.Application.Queries.GetAstronautDuties;
 global using Stargate.Application.Queries.GetPeople;
 global using Stargate.Application.Queries.GetPerson;
 global using Stargate.Infrastructure.Data;

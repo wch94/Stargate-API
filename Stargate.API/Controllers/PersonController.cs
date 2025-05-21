@@ -1,4 +1,6 @@
-﻿namespace Stargate.API.Controllers;
+﻿using Stargate.Application.Queries.GetAstronautDuties;
+
+namespace Stargate.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -50,4 +52,5 @@ public class PersonController : ControllerBase
         var response = await _mediator.Send(new DeletePersonCommand(id));
         return StatusCode(response.ResponseCode, response);
     }
+
 }

@@ -21,11 +21,13 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RequestPreProcessorBehavior<,>));
 builder.Services.AddTransient<IRequestPreProcessor<CreatePersonCommand>, CreatePersonPreProcessor>();
 
-// Register AutoMapper
+// Register AutoMappers
 builder.Services.AddAutoMapper(typeof(PersonProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(AstronautDutyProfile).Assembly);
 
-// Register repository
+// Register repositories
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IAstronautDutyRepository, AstronautDutyRepository>();
 
 var app = builder.Build();
 

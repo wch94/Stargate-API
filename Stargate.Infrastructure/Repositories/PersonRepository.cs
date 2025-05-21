@@ -63,4 +63,15 @@ public class PersonRepository : IPersonRepository
         _context.People.Remove(person);
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<List<AstronautDuty>> GetDutiesByPersonIdAsync(int personId, CancellationToken cancellationToken)
+    {
+        return await _context.AstronautDuties
+            .Include(d => d.Person)
+            .AsNoTracking()
+            .Where(d => d.PersonId == personId)
+            .OrderByDescending(d => d.DutyStartDate)
+            .ToListAsync(cancellationToken);
+    }
+
 }
