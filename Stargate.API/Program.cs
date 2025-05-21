@@ -1,14 +1,21 @@
-using Azure.Identity;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Data.SqlClient;
-using System;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Stargate API",
+        Version = "v1"
+    });
+
+    c.AddServer(new OpenApiServer
+    {
+        Url = "/stargate-api"
+    });
+});
 
 builder.Services.AddOpenApiDocument(config =>
 {
@@ -16,28 +23,13 @@ builder.Services.AddOpenApiDocument(config =>
     config.Version = "v1";
 });
 
-bool.TryParse(builder.Configuration["LOCAL_DEVELOPMENT"], out bool isLocalDev);
-var sqlServer = builder.Configuration["Database:Server"];
-var database = builder.Configuration["Database:Name"];
+// SQL connection string using sa
+var saPassword = Environment.GetEnvironmentVariable("SA_PASSWORD");
+var connectionString = $"Server=192.168.50.223;Database=StargateDB;User Id=sa;Password={saPassword};Encrypt=False;";
 
 // DbContext
 builder.Services.AddDbContext<StargateContext>(options =>
-{
-    SqlConnection connection;
-    if (isLocalDev)
-    {
-        var connectionString = $"Data Source={sqlServer};Initial Catalog={database};User ID=wch94_aol.com#EXT#@wch94aol.onmicrosoft.com;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Authentication=ActiveDirectoryInteractive;Application Intent=ReadWrite;Multi Subnet Failover=False";
-        connection = new SqlConnection(connectionString);
-    }
-    else
-    {
-        var connectionString = $"Server={sqlServer};Database={database};";
-        var credential = new DefaultAzureCredential();
-        var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://database.windows.net/" }));
-        connection = new SqlConnection(connectionString) { AccessToken = token.Token };
-    }
-    options.UseSqlServer(connection);
-});
+    options.UseSqlServer(connectionString));
 
 // Register MediatR and pipeline behaviors
 builder.Services.AddMediatR(cfg =>
@@ -62,23 +54,30 @@ builder.Services.AddScoped<IAstronautDutyRepository, AstronautDutyRepository>();
 
 var app = builder.Build();
 
-//// Configure the HTTP request pipeline
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+app.UsePathBase("/stargate-api");
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseOpenApi();      // Serves /swagger/v1/swagger.json
-    app.UseSwaggerUi();   // Serves Swagger UI at /swagger
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/stargate-api/swagger/v1/swagger.json", "Stargate API V1");
+        c.RoutePrefix = "swagger";
+    });
+
+    app.UseOpenApi();
+    app.UseSwaggerUi();
 }
 
 // Use custom global exception handler middleware
 app.UseCustomExceptionHandler();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
