@@ -1,9 +1,17 @@
+using Microsoft.AspNetCore.Builder;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddOpenApiDocument(config =>
+{
+    config.Title = "Stargate API";
+    config.Version = "v1";
+});
 
 builder.Services.AddDbContext<StargateContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("StargateDB")));
@@ -31,11 +39,17 @@ builder.Services.AddScoped<IAstronautDutyRepository, AstronautDutyRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+//// Configure the HTTP request pipeline
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseOpenApi();      // Serves /swagger/v1/swagger.json
+    app.UseSwaggerUi();   // Serves Swagger UI at /swagger
 }
 
 // Use custom global exception handler middleware
