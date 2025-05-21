@@ -5,15 +5,18 @@ public class CreateAstronautDutyHandler : IRequestHandler<CreateAstronautDutyCom
     private readonly IAstronautDutyRepository _dutyRepo;
     private readonly IPersonRepository _personRepo;
     private readonly IMapper _mapper;
+    private readonly ILogger<CreateAstronautDutyHandler> _logger;
 
     public CreateAstronautDutyHandler(
         IAstronautDutyRepository dutyRepo,
         IPersonRepository personRepo,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<CreateAstronautDutyHandler> logger)
     {
         _dutyRepo = dutyRepo;
         _personRepo = personRepo;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<CreateAstronautDutyResponse> Handle(CreateAstronautDutyCommand request, CancellationToken cancellationToken)
@@ -25,7 +28,10 @@ public class CreateAstronautDutyHandler : IRequestHandler<CreateAstronautDutyCom
         // Load astronaut detail if not already included
         var astronautDetail = person.AstronautDetail;
         if (astronautDetail == null)
+        {
+            _logger.LogWarning("Astronaut detail is missing for person {PersonId}", request.PersonId);
             throw new CustomValidationException("AstronautDetail", $"Person with ID {request.PersonId} does not have an astronaut detail record.");
+        }
 
         // Check for current active duty
         var currentDuty = person.AstronautDuties
@@ -34,7 +40,10 @@ public class CreateAstronautDutyHandler : IRequestHandler<CreateAstronautDutyCom
         if (currentDuty != null)
         {
             if (request.DutyStartDate <= currentDuty.DutyStartDate)
+            {
+                _logger.LogWarning("New duty start date must be after the current duty's start date.");
                 throw new CustomValidationException("AstronautDuty", "New duty start date must be after the current duty's start date.");
+            }
 
             currentDuty.DutyEndDate = request.DutyStartDate.AddDays(-1);
         }
@@ -44,6 +53,8 @@ public class CreateAstronautDutyHandler : IRequestHandler<CreateAstronautDutyCom
         {
             astronautDetail.CareerEndDate = request.DutyStartDate.AddDays(-1);
         }
+
+        _logger.LogInformation("Creating duty for person {PersonId}", request.PersonId);
 
         var duty = new Domain.Entities.AstronautDuty
         {

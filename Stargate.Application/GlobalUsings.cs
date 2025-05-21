@@ -3,6 +3,7 @@ global using FluentValidation;
 global using MediatR;
 global using MediatR.Pipeline;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Logging;
 global using Stargate.Application.Common.Exceptions;
 global using Stargate.Application.Common.Responses;
 global using Stargate.Application.DTOs;

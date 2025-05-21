@@ -1,5 +1,23 @@
 var builder = WebApplication.CreateBuilder(args);
 
+var saPassword = Environment.GetEnvironmentVariable("SA_PASSWORD");
+var connectionString = $"Server=192.168.50.223;Database=StargateDB;User Id=sa;Password={saPassword};Encrypt=False;";
+
+var sinkOpts = new MSSqlServerSinkOptions
+{
+    TableName = "Logs",
+    AutoCreateSqlTable = true
+};
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.MSSqlServer(connectionString, sinkOpts)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 // Add services to the container
 builder.Services.AddControllers();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -32,10 +50,6 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
         policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
-
-// SQL connection string using sa
-var saPassword = Environment.GetEnvironmentVariable("SA_PASSWORD");
-var connectionString = $"Server=192.168.50.223;Database=StargateDB;User Id=sa;Password={saPassword};Encrypt=False;";
 
 // DbContext
 builder.Services.AddDbContext<StargateContext>(options =>
