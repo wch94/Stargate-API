@@ -1,6 +1,4 @@
-﻿using Stargate.Application.Commands.AstronautDuty.Create;
-
-namespace Stargate.API.Controllers;
+﻿namespace Stargate.API.Controllers;
 
 [ApiController]
 [Route("v1/duty")]

@@ -1,7 +1,4 @@
-﻿using Stargate.Application.Queries.GetAstronautDuties;
-using Stargate.Application.Responses;
-
-namespace Stargate.API.Controllers;
+﻿namespace Stargate.API.Controllers;
 
 [ApiController]
 [Route("v1/[controller]")]
@@ -18,10 +15,10 @@ public class PersonController : ControllerBase
     [ProducesResponseType(typeof(GetPeopleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get(
         [FromQuery] string? name,
-        [FromQuery] string? sortBy = "name",
+        [FromQuery] string? sortBy = "id",
         [FromQuery] bool desc = false,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10)
+        [FromQuery] int pageSize = 5)
     {
         var response = await _mediator.Send(new GetPeopleQuery(name, sortBy, desc, page, pageSize));
         return StatusCode(response.ResponseCode, response);
