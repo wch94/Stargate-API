@@ -8,6 +8,7 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.OpenApi.Models;
 global using Serilog;
+global using Serilog.Events;
 global using Serilog.Sinks.MSSqlServer;
 global using Stargate.API.Extensions;
 global using Stargate.API.Middleware;

@@ -1,7 +1,14 @@
 var builder = WebApplication.CreateBuilder(args);
 
+var rawConnStr = builder.Configuration.GetConnectionString("StargateDb");
 var saPassword = Environment.GetEnvironmentVariable("SA_PASSWORD");
-var connectionString = $"Server=192.168.50.223;Database=StargateDB;User Id=sa;Password={saPassword};Encrypt=False;";
+
+if (string.IsNullOrWhiteSpace(saPassword))
+{
+    throw new InvalidOperationException("SA_PASSWORD environment variable is not set.");
+}
+
+var connectionString = rawConnStr.Replace("{SA_PASSWORD}", saPassword);
 
 var sinkOpts = new MSSqlServerSinkOptions
 {
@@ -12,7 +19,11 @@ var sinkOpts = new MSSqlServerSinkOptions
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Console()
-    .WriteTo.MSSqlServer(connectionString, sinkOpts)
+    .WriteTo.MSSqlServer(
+        connectionString: connectionString,
+        sinkOptions: sinkOpts,
+        restrictedToMinimumLevel: LogEventLevel.Warning
+    )
     .Enrich.FromLogContext()
     .CreateLogger();
 

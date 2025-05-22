@@ -13,7 +13,7 @@ public class StargateContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(StargateContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PersonConfiguration).Assembly);
 
         base.OnModelCreating(modelBuilder);
     }

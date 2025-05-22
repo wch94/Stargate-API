@@ -23,7 +23,10 @@ public class CreateAstronautDutyHandler : IRequestHandler<CreateAstronautDutyCom
     {
         var person = await _personRepo.GetByIdAsync(request.PersonId, cancellationToken);
         if (person is null)
+        {
+            _logger.LogWarning($"Person with ID {request.PersonId} not found.");
             throw new NotFoundException($"Person with ID {request.PersonId} not found.");
+        }
 
         // Load astronaut detail if not already included
         var astronautDetail = person.AstronautDetail;

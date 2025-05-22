@@ -4,18 +4,23 @@ public class UpdatePersonByIdHandler : IRequestHandler<UpdatePersonEnvelope, Upd
 {
     private readonly IPersonRepository _personRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<UpdatePersonByIdHandler> _logger;
 
-    public UpdatePersonByIdHandler(IPersonRepository personRepository, IMapper mapper)
+    public UpdatePersonByIdHandler(IPersonRepository personRepository, IMapper mapper, ILogger<UpdatePersonByIdHandler> logger)
     {
         _personRepository = personRepository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<UpdatePersonResponse> Handle(UpdatePersonEnvelope request, CancellationToken cancellationToken)
     {
         var person = await _personRepository.GetByIdAsync(request.Id, cancellationToken);
         if (person is null)
+        {
+            _logger.LogWarning($"No person found with ID {request.Id}");
             throw new NotFoundException($"No person found with ID {request.Id}");
+        }
 
         person.Name = request.Command.Name;
 
