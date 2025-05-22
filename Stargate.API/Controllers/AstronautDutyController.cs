@@ -3,7 +3,7 @@
 namespace Stargate.API.Controllers;
 
 [ApiController]
-[Route("api/v1/duty")]
+[Route("v1/duty")]
 public class AstronautDutyController : ControllerBase
 {
     private readonly IMediator _mediator;

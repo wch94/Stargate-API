@@ -22,13 +22,18 @@ public class GetPeopleHandler : IRequestHandler<GetPeopleQuery, GetPeopleRespons
         }
 
         // Sorting
-        query = request.SortBy?.ToLower() switch
+        query = request.SortBy switch
         {
+            "id" => request.Desc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
             "name" => request.Desc ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name),
-            "rank" => request.Desc ? query.OrderByDescending(p => p.AstronautDetail!.CurrentRank)
+            "currentRank" => request.Desc ? query.OrderByDescending(p => p.AstronautDetail!.CurrentRank)
                                    : query.OrderBy(p => p.AstronautDetail!.CurrentRank),
-            "startdate" => request.Desc ? query.OrderByDescending(p => p.AstronautDetail!.CareerStartDate)
+            "currentDutyTitle" => request.Desc ? query.OrderByDescending(p => p.AstronautDetail!.CurrentDutyTitle)
+                                   : query.OrderBy(p => p.AstronautDetail!.CurrentDutyTitle),
+            "careerStartDate" => request.Desc ? query.OrderByDescending(p => p.AstronautDetail!.CareerStartDate)
                                         : query.OrderBy(p => p.AstronautDetail!.CareerStartDate),
+            "careerEndDate" => request.Desc ? query.OrderByDescending(p => p.AstronautDetail!.CareerEndDate)
+                                        : query.OrderBy(p => p.AstronautDetail!.CareerEndDate),
             _ => query.OrderBy(p => p.Id)
         };
 

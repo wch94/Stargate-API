@@ -4,7 +4,7 @@ using Stargate.Application.Responses;
 namespace Stargate.API.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("v1/[controller]")]
 public class PersonController : ControllerBase
 {
     private readonly IMediator _mediator;
